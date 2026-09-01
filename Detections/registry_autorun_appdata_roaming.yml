@@ -1,0 +1,36 @@
+title: Suspicious Run Key Persistence from AppData Roaming
+id: 7e2a1c4d-9f3b-4a6e-8c1d-2b5f7e9a3c10
+status: experimental
+description: |
+  Detects a registry write to the HKCU Run autorun key where the value
+  points to an executable located in %AppData%\Roaming\<random-folder>.
+  Observed during dynamic analysis of a BitRAT sample (SHA-256
+  bf7628695c2df7a3020034a065397592a1f8850e59f9a448b555bc1c8c639539)
+  delivered via a spear-phishing lure, where the dropped binary
+  Jzwvix.exe registered itself for persistence under a randomly named
+  AppData\Roaming subfolder (Ozndzodb).
+references:
+  - internal://PhishStrike-IR/report.md#42-bitrat-sample
+author: PhishStrike IR Report
+date: 2026/08/31
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains: 'Software\Microsoft\Windows\CurrentVersion\Run\'
+    Details|contains: '\AppData\Roaming\'
+  filter_common_legit:
+    Details|contains:
+      - '\AppData\Roaming\Microsoft\'
+      - '\AppData\Roaming\Adobe\'
+      - '\AppData\Roaming\Zoom\'
+  condition: selection and not filter_common_legit
+falsepositives:
+  - Some legitimate applications (Dropbox, some VPN clients) also install
+    to AppData\Roaming and register autorun entries. Tune the filter list
+    to known-good vendor folder names in your environment.
+level: high

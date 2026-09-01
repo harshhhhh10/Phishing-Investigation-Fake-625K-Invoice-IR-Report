@@ -1,0 +1,33 @@
+title: Outbound HTTPS Request to Telegram Bot API getUpdates Endpoint
+id: 9c1e4a7b-3d6f-4b8a-a2e5-7f1c9b4d8e63
+status: experimental
+description: |
+  Detects outbound requests to api.telegram.org containing a
+  /bot<digits>/.../getUpdates path, a long-poll pattern used by
+  commodity RATs (observed here with AsyncRAT, SHA-256
+  5ca468704e7ccb8e1b37c0f7595c54df4e2f4035345b6e442e8bd4e11c58f791,
+  Telegram Bot ID bot5610920260) to receive C2 commands over legitimate
+  Telegram infrastructure, evading naive domain-reputation blocking
+  since api.telegram.org is not inherently malicious.
+references:
+  - internal://PhishStrike-IR/report.md#43-asyncrat-sample
+author: PhishStrike IR Report
+date: 2026/08/31
+tags:
+  - attack.command_and_control
+  - attack.t1102
+  - attack.t1071.001
+logsource:
+  category: proxy
+  product: any
+detection:
+  selection:
+    c-uri|contains: 'api.telegram.org/bot'
+    c-uri|contains: 'getUpdates'
+  condition: selection
+falsepositives:
+  - Legitimate Telegram bots (internal alerting/notification integrations)
+    use this exact endpoint pattern. This rule is high-signal only in
+    environments where Telegram bot usage is not an approved business
+    workflow — baseline against known-good bot IDs before alerting.
+level: medium

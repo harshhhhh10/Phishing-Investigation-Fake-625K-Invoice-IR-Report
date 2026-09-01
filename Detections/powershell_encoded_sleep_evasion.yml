@@ -1,0 +1,39 @@
+title: Encoded PowerShell Command with Sandbox-Evasion Sleep
+id: 4b8d6f21-1a7c-4e5d-9b2f-6c3e8a1d5f47
+status: experimental
+description: |
+  Detects PowerShell invoked with -enc/-EncodedCommand where the decoded
+  payload consists solely (or primarily) of a Start-Sleep call. Observed
+  in the BitRAT sample analyzed in this report: the malware executed
+  powershell.exe -enc <Base64> which decoded to "Start-Sleep -Seconds 50",
+  used to delay execution past automated sandbox analysis windows before
+  dropping and executing the final payload.
+references:
+  - internal://PhishStrike-IR/report.md#42-bitrat-sample
+author: PhishStrike IR Report
+date: 2026/08/31
+tags:
+  - attack.execution
+  - attack.t1059.001
+  - attack.defense_evasion
+  - attack.t1497.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_encoded:
+    Image|endswith: '\powershell.exe'
+    CommandLine|contains:
+      - '-enc '
+      - '-EncodedCommand'
+  selection_parent_suspicious:
+    ParentImage|contains:
+      - '\AppData\Roaming\'
+      - '\AppData\Local\Temp\'
+  condition: selection_encoded and selection_parent_suspicious
+falsepositives:
+  - Legitimate admin tooling and some software installers use encoded
+    PowerShell for parameter safety. Correlate with parent process path
+    (user-writable temp/roaming directories) to reduce noise, and pair
+    with a Base64-decode step in triage to confirm the sleep pattern.
+level: medium
