@@ -193,15 +193,15 @@ No telemetry from the actual target mailbox or endpoint was available in this la
 
 ## 8. Draft Detection Logic (Learning Exercise)
 
-As a practice exercise, three Sigma rules were drafted from behavior directly observed in this investigation (not generic templates)   an attempt to translate the sandbox findings above into detection logic. Rule source: [`detections/`](./detections/).
+As a practice exercise, three Sigma rules were drafted from behavior directly observed in this investigation (not generic templates)   an attempt to translate the sandbox findings above into detection logic. Rule source: [`Detections/`](./Detections/).
 
 **Scope note:** these are first-draft rules written from lab evidence, not production-tested detections. Field names follow common Sysmon/proxy-log conventions but have not been validated against a specific SIEM schema, and no rule has been run through a Sigma converter or tested against real log data.
 
 | Rule | File | Detects | ATT&CK |
 |---|---|---|---|
-| Suspicious Run Key Persistence from AppData Roaming | [`registry_autorun_appdata_roaming.yml`](./detections/registry_autorun_appdata_roaming.yml) | HKCU Run key write pointing to an executable under `AppData\Roaming\<random>` | T1547.001 |
-| Encoded PowerShell Command with Sandbox-Evasion Sleep | [`powershell_encoded_sleep_evasion.yml`](./detections/powershell_encoded_sleep_evasion.yml) | `powershell.exe -enc` launched from a Temp/Roaming parent process | T1059.001, T1497.003 |
-| Outbound HTTPS Request to Telegram Bot API getUpdates Endpoint | [`telegram_bot_api_c2_pattern.yml`](./detections/telegram_bot_api_c2_pattern.yml) | Proxy/network logs showing `api.telegram.org/bot<id>/.../getUpdates` | T1102, T1071.001 |
+| Suspicious Run Key Persistence from AppData Roaming | [`registry_autorun_appdata_roaming.yml`](./Detections/registry_autorun_appdata_roaming.yml) | HKCU Run key write pointing to an executable under `AppData\Roaming\<random>` | T1547.001 |
+| Encoded PowerShell Command with Sandbox-Evasion Sleep | [`powershell_encoded_sleep_evasion.yml`](./Detections/powershell_encoded_sleep_evasion.yml) | `powershell.exe -enc` launched from a Temp/Roaming parent process | T1059.001, T1497.003 |
+| Outbound HTTPS Request to Telegram Bot API getUpdates Endpoint | [`telegram_bot_api_c2_pattern.yml`](./Detections/telegram_bot_api_c2_pattern.yml) | Proxy/network logs showing `api.telegram.org/bot<id>/.../getUpdates` | T1102, T1071.001 |
 
 Each rule documents its own false-positive conditions (e.g., legitimate software also installs to `AppData\Roaming`; legitimate internal Telegram bot integrations use the same endpoint pattern)   tune before production deployment rather than deploying as-is. Field names used (`TargetObject`, `c-uri`) follow Sysmon/generic-proxy conventions and have not been validated against a specific production SIEM schema.
 
