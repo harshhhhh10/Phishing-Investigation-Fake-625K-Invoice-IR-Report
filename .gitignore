@@ -1,0 +1,11 @@
+# OS junk files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+*.swp
+
+# Archives (don't commit the zip alongside the unzipped files)
+*.zip
